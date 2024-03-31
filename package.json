@@ -1,0 +1,30 @@
+{
+  "name": "npubcash-alias",
+  "version": "1.0.0",
+  "description": "Sell aliases for your npubcash-server",
+  "main": "index.js",
+  "scripts": {
+    "dev": "NODE_ENV=development nodemon",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "@types/express": "^4.17.21",
+    "@types/node": "^20.12.2",
+    "@types/pg": "^8.11.4",
+    "dotenv": "^16.4.5",
+    "esbuild": "^0.20.2",
+    "nodemon": "^3.1.0",
+    "typescript": "^5.4.3"
+  },
+  "dependencies": {
+    "cors": "^2.8.5",
+    "express": "^4.19.2",
+    "graphql": "^16.8.1",
+    "graphql-request": "^6.1.0",
+    "nostr-tools": "^2.3.2",
+    "pg": "^8.11.3"
+  }
+}
