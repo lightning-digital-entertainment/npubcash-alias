@@ -35,6 +35,13 @@ export class PaymentRequest {
     }
   }
 
+  static async hasPendingPaymentRequest(pubkey: string) {
+    const query = `SELECT * FROM l_alias_requests WHERE pubkey = $1 AND status = 'pending'`;
+    const params = [pubkey];
+    const queryRes = await queryWrapper(query, params);
+    return queryRes.rows.length > 0;
+  }
+
   static async getPaymentRequestStatus(payment_request: string) {
     const query = `SELECT status FROM l_alias_requests WHERE payment_request = $1`;
     const params = [payment_request];
