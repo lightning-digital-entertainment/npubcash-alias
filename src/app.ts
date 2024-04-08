@@ -7,6 +7,8 @@ import { User } from "./models/User";
 
 const app = express();
 
+const memo = "NPC Alias";
+
 app.post(
   "/create",
   isAuthMiddleware("/create", "POST"),
@@ -44,12 +46,26 @@ app.post(
           message: "alias is already taken",
         });
       }
-      const invoiceRequest = await lnProvider.createInvoice(amount);
+      const isReserved = await PaymentRequest.checkIfReserved(alias);
+      if (isReserved) {
+        res.status(409);
+        return res.json({
+          error: true,
+          message: "alias is reserved. Check back in a couple of minutes",
+        });
+      }
+      const invoiceRequest = await lnProvider.createInvoice(amount, memo);
       await PaymentRequest.createPaymentRequest(
         authData.data.pubkey,
         invoiceRequest.paymentRequest,
+        invoiceRequest.paymentHash,
         alias,
+        amount,
       );
+      res.json({
+        error: false,
+        data: { payment_request: invoiceRequest.paymentRequest, alias },
+      });
     } catch (e) {
       console.log(e);
       res.status(500);
@@ -92,7 +108,7 @@ app.get(
 
 app.post(
   "/paid",
-  (
+  async (
     req: Request<
       unknown,
       unknown,
@@ -109,9 +125,29 @@ app.post(
     res: Response,
   ) => {
     const { eventType, transaction } = req.body;
-    if (eventType === "receive.lightning") {
-      const reqHash = transaction.initiationVia.paymentHash;
-    } else {
+    if (eventType !== "receive.lightning" || transaction.memo !== memo) {
+      return res.sendStatus(200);
+    }
+    const reqHash = transaction.initiationVia.paymentHash;
+    try {
+      const paymentRequest =
+        await PaymentRequest.getPaymentRequestByHash(reqHash);
+      if (!paymentRequest) {
+        return res.sendStatus(200);
+      }
+      if (transaction.settlementAmount !== paymentRequest.amount) {
+        return res.sendStatus(200);
+      }
+      await User.upsertUsernameByPubkey(
+        paymentRequest.pubkey,
+        paymentRequest.alias,
+      );
+      await PaymentRequest.updatePaymentRequestStatus(
+        "done",
+        paymentRequest.payment_hash,
+      );
+    } catch (e) {
+      console.log(e);
       return res.sendStatus(200);
     }
   },
