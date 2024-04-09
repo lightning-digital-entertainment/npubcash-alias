@@ -24,6 +24,7 @@ export function isAuthMiddleware(path: string, method: string) {
       return res.json({ error: true, message: "missing host header..." });
     }
     const url = protocol + "://" + hostname + path;
+    console.log(url);
     const authHeader = req.header("Authorization");
     if (!authHeader) {
       res.status(401);
