@@ -15,21 +15,24 @@ export function requireHTTPS(req: Request, res: Response, next: NextFunction) {
 export function isAuthMiddleware(path: string, method: string) {
   async function isAuth(req: Request, res: Response, next: NextFunction) {
     const hostname = req.header("host");
-    const protocol = req.header("X-Forwarded-Proto");
+    const protocol =
+      req.header("X-Forwarded-Proto") || process.env.NODE_ENV == "development"
+        ? "http"
+        : "https";
     if (!hostname) {
       res.status(400);
-      return next(new Error("Missing host header"));
+      return res.json({ error: true, message: "missing host header..." });
     }
     const url = protocol + "://" + hostname + path;
     const authHeader = req.header("Authorization");
     if (!authHeader) {
       res.status(401);
-      return next(new Error("Missing Authorization Header"));
+      return res.json({ error: true, message: "missing auth header" });
     }
     const isAuth = await verifyAuth(authHeader, url, method);
     if (!isAuth.authorized) {
       res.status(401);
-      return next(new Error("Invalid Authorization Header"));
+      return res.json({ error: true, message: "invalid auth header" });
     } else {
       req.authData = isAuth;
     }
