@@ -4,6 +4,7 @@ import { LightningHandler } from "./lightning";
 import { BlinkProvider } from "./blink";
 
 export const lnProvider = new LightningHandler(new BlinkProvider());
+export const memo = "NPC Alias";
 
 const server = createServer(app);
 
