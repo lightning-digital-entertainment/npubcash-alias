@@ -1,4 +1,5 @@
 import express, { json } from "express";
+import cors from "cors";
 import { isAuthMiddleware } from "./middleware";
 import { paidController } from "./controller/paid";
 import { checkController } from "./controller/check";
@@ -7,6 +8,7 @@ import { createController } from "./controller/create";
 const app = express();
 
 app.use(json());
+app.use(cors());
 
 app.post("/create", isAuthMiddleware("/create", "POST"), createController);
 
