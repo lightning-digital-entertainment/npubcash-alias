@@ -15,6 +15,7 @@ export function requireHTTPS(req: Request, res: Response, next: NextFunction) {
 export function isAuthMiddleware(path: string, method: string) {
   async function isAuth(req: Request, res: Response, next: NextFunction) {
     const hostname = req.header("host");
+    console.log(req.header("X-Forwarded-Proto"));
     const protocol =
       req.header("X-Forwarded-Proto") || process.env.NODE_ENV == "development"
         ? "http"
