@@ -30,7 +30,7 @@ export async function paidController(
     if (!paymentRequest) {
       return res.sendStatus(200);
     }
-    if (transaction.settlementAmount !== paymentRequest.amount) {
+    if (transaction.settlementAmount !== Number(paymentRequest.amount)) {
       return res.sendStatus(200);
     }
     await User.upsertUsernameByPubkey(
