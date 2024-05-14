@@ -1,5 +1,6 @@
 import { NextFunction, Request, Response } from "express";
 import { verifyAuth } from "./auth";
+import { SpawnSyncOptionsWithBufferEncoding } from "child_process";
 
 export function requireHTTPS(req: Request, res: Response, next: NextFunction) {
   if (
@@ -15,11 +16,13 @@ export function requireHTTPS(req: Request, res: Response, next: NextFunction) {
 export function isAuthMiddleware(path: string, method: string) {
   async function isAuth(req: Request, res: Response, next: NextFunction) {
     const hostname = req.header("host");
-    console.log(req.header("X-Forwarded-Proto"));
-    const protocol =
-      req.header("X-Forwarded-Proto") || process.env.NODE_ENV == "development"
-        ? "http"
-        : "https";
+    let protocol: string;
+    const protoHeader = req.header("X-Forwarded-Proto");
+    if (protoHeader) {
+      protocol = protoHeader;
+    } else {
+      protocol = process.env.NODE_ENV == "development" ? "http" : "https";
+    }
     if (!hostname) {
       res.status(400);
       return res.json({ error: true, message: "missing host header..." });
