@@ -10,10 +10,15 @@ const app = express();
 app.use(json());
 app.use(cors());
 
-app.post("/create", isAuthMiddleware("/create", "POST"), createController);
+app.post(
+  "/api/v1/create",
+  isAuthMiddleware("/api/v1/create", "POST"),
+  createController,
+);
 
-app.get("/check", checkController);
+app.get("/api/v1/check", checkController);
 
 app.post("/paid", paidController);
+app.post("/api/v1/paid", paidController);
 
 export default app;
