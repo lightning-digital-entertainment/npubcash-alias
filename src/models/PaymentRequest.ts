@@ -42,9 +42,9 @@ export class PaymentRequest {
   }
 
   static async cancelTimedOutRequests() {
-    const query = `UPDATE l_alias_requests SET status 'cancelled' WHERE created_at < now() - interval '7minutes'`;
+    const query = `UPDATE l_alias_requests SET status 'cancelled' WHERE created_at < now() - interval '10minutes'`;
     const res = await queryWrapper(query, []);
-    console.log(`Updated ${res.rowCount} rows...`);
+    return res.rowCount;
   }
 
   static async checkIfReserved(alias: string) {
