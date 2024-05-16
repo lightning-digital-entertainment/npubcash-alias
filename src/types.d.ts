@@ -24,6 +24,7 @@ export interface PaymentProvider {
     amount: number,
     memo?: string,
     descriptionHash?: string,
+    expiresIn?: number,
   ) => Promise<{
     paymentRequest: string;
     paymentHash: string;

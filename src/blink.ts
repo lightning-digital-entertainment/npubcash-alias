@@ -42,11 +42,17 @@ const graphQLClient = new GraphQLClient(endpoint, {
 });
 
 export class BlinkProvider implements PaymentProvider {
-  async createInvoice(amount: number, memo?: string, descriptionHash?: string) {
+  async createInvoice(
+    amount: number,
+    memo?: string,
+    descriptionHash?: string,
+    expiresIn?: number,
+  ) {
     const invoice = await createBlinkInvoice(
       amount,
       memo ? memo : "",
       descriptionHash,
+      expiresIn,
     );
     return {
       paymentRequest: invoice.paymentRequest,
@@ -110,6 +116,7 @@ export async function createBlinkInvoice(
   amountInSats: number,
   memo: string,
   descriptionHash?: string,
+  expiresIn?: number,
 ) {
   const mutation = gql`
     mutation LnInvoiceCreateOnBehalfOfRecipient(
@@ -134,6 +141,7 @@ export async function createBlinkInvoice(
       amount: amountInSats,
       memo,
       descriptionHash,
+      expiresIn,
       recipientWalletId: process.env.BLINK_WALLET_ID,
     },
   };

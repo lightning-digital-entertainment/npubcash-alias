@@ -46,7 +46,12 @@ export async function createController(
         message: "alias is reserved. Check back in a couple of minutes",
       });
     }
-    const invoiceRequest = await lnProvider.createInvoice(amount, memo);
+    const invoiceRequest = await lnProvider.createInvoice(
+      amount,
+      memo,
+      undefined,
+      10,
+    );
     await PaymentRequest.createPaymentRequest(
       authData.data.pubkey,
       invoiceRequest.paymentRequest,
